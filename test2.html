@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Exam</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #5d9cec;
+        --primary-light: #e0e7ff;
+        --secondary: #3f37c9;
+        --success: #00ff6a;
+        --danger: #f72585;
+        --warning: #f8961e;
+        --dark: #212529;
+        --light: #f8f9fa;
+        --border-radius: 12px;
+        --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #e4e6e9 0%, #4f86f3 100%);
+        color: var(--dark);
+        line-height: 1.6;
+        padding-top: 120px;
+      }
+
+      /* Fixed top header */
+      .top-bar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        box-shadow: var(--box-shadow);
+        z-index: 1000;
+        padding: 15px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: white;
+        transition: var(--transition);
+      }
+
+      .top-bar:hover {
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.3);
+      }
+
+      .score-box {
+        display: none;
+        background-color: white;
+        border-radius: var(--border-radius);
+        padding: 10px 25px;
+        font-size: 18px;
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 2px solid var(--primary-light);
+      }
+
+      .timer-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .timer {
+        font-size: 24px;
+        font-weight: 600;
+        color: white;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 8px 16px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .timer i {
+        font-size: 20px;
+      }
+
+      .blink {
+        animation: blink 1s step-start 0s infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          background-color: var(--danger);
+          color: white;
+        }
+        100% {
+          background-color: white;
+          color: var(--danger);
+        }
+      }
+
+      .quiz-container {
+        max-width: 800px;
+        margin: 20px auto;
+        background-color: white;
+        padding: 40px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition);
+      }
+
+      .quiz-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .quiz-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--primary), var(--success));
+      }
+
+      .quiz-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .quiz-header h2 {
+        font-size: 28px;
+        color: var(--primary);
+        margin-bottom: 10px;
+        position: relative;
+        display: inline-block;
+      }
+
+      .quiz-header h2::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(to right, var(--primary), var(--success));
+        border-radius: 2px;
+      }
+
+      .quiz-header p {
+        color: #666;
+        font-size: 16px;
+      }
+
+      .question {
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: var(--light);
+        border-radius: var(--border-radius);
+        position: relative;
+        transition: var(--transition);
+      }
+
+      .question:hover {
+        transform: translateX(5px);
+      }
+
+      .question-number {
+        position: absolute;
+        top: -15px;
+        left: 20px;
+        background-color: var(--primary);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .question-text {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 15px;
+        color: var(--dark);
+      }
+
+      .question-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: var(--border-radius);
+        margin-bottom: 15px;
+        display: block;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .options label {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background-color: white;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: 16px;
+        transition: var(--transition);
+        border: 2px solid #e9ecef;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .options label:hover {
+        border-color: var(--primary-light);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.1);
+      }
+
+      .options label::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 5px;
+        height: 100%;
+        background-color: transparent;
+        transition: var(--transition);
+      }
+
+      .options label:hover::before {
+        background-color: var(--primary-light);
+      }
+
+      .options input[type="radio"] {
+        appearance: none;
+        width: 22px;
+        height: 22px;
+        border: 2px solid #adb5bd;
+        border-radius: 50%;
+        margin-right: 15px;
+        cursor: pointer;
+        position: relative;
+        transition: var(--transition);
+      }
+
+      .options input[type="radio"]:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+      }
+
+      .options input[type="radio"]:checked::after {
+        content: "";
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background-color: white;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .correct-icon {
+        background-color: rgba(76, 201, 240, 0.1) !important;
+        border-color: var(--success) !important;
+      }
+
+      .correct-icon::after {
+        content: " ✓";
+        color: var(--success);
+        font-weight: bold;
+        margin-left: 10px;
+      }
+
+      .wrong-icon {
+        background-color: rgba(247, 37, 133, 0.1) !important;
+        border-color: var(--danger) !important;
+      }
+
+      .wrong-icon::after {
+        content: " ✗";
+        color: var(--danger);
+        font-weight: bold;
+        margin-left: 10px;
+      }
+
+      .correct-answer-hint {
+        color: var(--success);
+        font-size: 15px;
+        margin-top: 8px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .correct-answer-hint i {
+        font-size: 14px;
+      }
+
+      .submit-btn {
+        padding: 15px 30px;
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--secondary) 100%
+        );
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 30px;
+        display: block;
+        width: 100%;
+        transition: var(--transition);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+      }
+
+      .submit-btn:active {
+        transform: translateY(0);
+      }
+
+      .submit-btn::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      .submit-btn:hover::after {
+        left: 100%;
+      }
+
+      .submit-btn:disabled {
+        background: #adb5bd;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .submit-btn:disabled::after {
+        display: none;
+      }
+
+      .notification {
+        display: none;
+        text-align: center;
+        font-size: 18px;
+        margin: 20px auto;
+        padding: 15px;
+        border-radius: var(--border-radius);
+        width: 90%;
+        max-width: 600px;
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+      }
+
+      .fullscreen-warning {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        font-size: 24px;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .fullscreen-warning button {
+        margin-top: 20px;
+        padding: 12px 24px;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .success {
+        background-color: rgba(76, 201, 240, 0.2);
+        color: var(--success);
+        border: 2px solid var(--success);
+      }
+
+      .error {
+        background-color: rgba(247, 37, 133, 0.2);
+        color: var(--danger);
+        border: 2px solid var(--danger);
+      }
+
+      .progress-container {
+        width: 100%;
+        height: 6px;
+        background-color: #e9ecef;
+        border-radius: 3px;
+        margin-bottom: 30px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(to right, var(--primary), var(--success));
+        border-radius: 3px;
+        transition: width 0.5s ease;
+      }
+
+      /* Mobile responsiveness */
+      @media (max-width: 768px) {
+        body {
+          padding-top: 110px;
+        }
+
+        .quiz-container {
+          padding: 20px;
+          margin: 10px;
+        }
+
+        .question {
+          padding: 15px;
+        }
+
+        .timer {
+          font-size: 18px;
+          padding: 6px 12px;
+        }
+
+        .quiz-header h2 {
+          font-size: 22px;
+        }
+
+        .question-text {
+          font-size: 16px;
+        }
+
+        .options label {
+          padding: 12px;
+          font-size: 15px;
+        }
+
+        .submit-btn {
+          padding: 12px 20px;
+          font-size: 16px;
+        }
+
+        .fullscreen-warning {
+          font-size: 18px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding-top: 100px;
+        }
+
+        .quiz-container {
+          padding: 15px;
+        }
+
+        .question {
+          padding: 12px;
+        }
+
+        .question-number {
+          width: 25px;
+          height: 25px;
+          font-size: 14px;
+        }
+
+        .timer {
+          font-size: 16px;
+        }
+
+        .score-box {
+          font-size: 16px;
+          padding: 8px 15px;
+        }
+      }
+
+      .name-input-container {
+        max-width: 800px;
+        margin: 0 auto 20px;
+        background-color: white;
+        padding: 20px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+      }
+
+      .name-input-container input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: var(--border-radius);
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <div class="score-box" id="scoreBox"></div>
+      <div class="timer-container">
+        <i class="fas fa-clock"></i>
+        <div class="timer" id="timer">15:00</div>
+      </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div
+      id="fullscreenWarning"
+      class="fullscreen-warning"
+      style="display: none"
+    >
+      <h3>Warning: Tab Change Detected</h3>
+      <p>You have switched to another tab or minimized the window.</p>
+      <p>
+        Return to the quiz immediately or your answers will be submitted
+        automatically.
+      </p>
+      <div class="timer" id="warningTimer">10</div>
+      <button id="returnToQuizBtn">Return to Quiz</button>
+    </div>
+    <div class="name-input-container">
+      <input
+        type="text"
+        id="studentNameInput"
+        placeholder="Enter your name"
+        required
+      />
+    </div>
+    <div class="quiz-container">
+      <div class="quiz-header">
+        <h2>DCSC Sports Quiz</h2>
+        <p>Test your sports knowledge</p>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <form id="quizForm"></form>
+
+      <button class="submit-btn" onclick="submitQuiz(event)">
+        <i class="fas fa-paper-plane"></i> Submit Answers
+      </button>
+    </div>
+
+    <div>
+      <div style="display: none">
+        <form
+          id="scoreForm"
+          method="post"
+          action="https://script.google.com/macros/s/AKfycbzd3mFXAGX_F6ocjWJIwDYIrAwEzpWY9-YN1aiVBR4ZG2kNCavZbf4929dPUK-SpGEDng/exec"
+        >
+          <input type="text" name="Name" id="studentName" placeholder="Name" />
+          <input
+            type="text"
+            name="Score"
+            id="studentScore"
+            placeholder="score"
+          />
+          <input
+            type="text"
+            name="Total"
+            id="totalQuestions"
+            placeholder="Total Questions"
+          />
+          <input
+            type="text"
+            name="Percentage"
+            id="scorePercentage"
+            placeholder="percentage"
+          />
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          question:
+            "Cricket bat is made from this tree. What is the name of this tree?",
+          options: [
+            "Green Willow",
+            "Black Willow",
+            "Parrot Willow",
+            "White Willow",
+          ],
+          answer: "White Willow",
+          image:
+            "https://images-cdn.kahoot.it/110bc01a-92e3-4ad8-a051-e86fc503a5a0?auto=webp&dpr=1&width=1200",
+        },
+        {
+          question:
+            "Both of them are legendary cricketers who faught against the government of Robert Mugabe. Who are they?",
+          options: [
+            "Andy Flower & Henry Olonga",
+            "Andy Flower & Tatenda Taibu",
+            "Grant Flower & Mark Vermeulan",
+            "Grant Flower & Chris Mpofu",
+          ],
+          answer: "Andy Flower & Henry Olonga",
+          image:
+            "https://images-cdn.kahoot.it/3c4dd705-d274-4269-af11-5ebd25ef8004?auto=webp&dpr=1&width=1200",
+        },
+        {
+          question:
+            "When was the ICC founded and who is the present chairman of it?",
+          options: [
+            "19011, Steve Buckner",
+            "1905, Amit Kumar",
+            "1909, Jay Shah",
+            "1805, Amit Kumar",
+          ],
+          answer: "1909, Jay Shah",
+          image:
+            "https://images-cdn.kahoot.it/6ba607b3-bcf2-4b4e-81f2-6d2756131d17?auto=webp&dpr=1&width=1200",
+        },
+
+        {
+          question: "Who scored the fastest century in T20I?",
+          options: [
+            "Sahil Chauhan",
+            "Jan Nicole Loftie Eaton",
+            "David Miller",
+            "Kushal Malla",
+          ],
+          answer: "Sahil Chauhan",
+          image:
+            "https://images-cdn.kahoot.it/7f86c228-ca93-4a73-a9a1-36a4fcbd160a?auto=webp&dpr=1&width=1200",
+        },
+
+        {
+          question:
+            "The 1992 ICC world cup was a historical one. Many firsts have happened in this tournament. Can you name these firsts?",
+          options: [
+            "Team photos, Cricket sponsor, ambassador, coloured clothing, D/N matches",
+            "Rebirth of SA, team photos, coloured clothing",
+            "Coloured Clothing, D/N matches, Black screens, white ball, Rebirth of SA",
+            "Team photos, Coloured Clothing, Ambassador, D/N matches",
+          ],
+          answer:
+            "Coloured Clothing, D/N matches, Black screens, white ball, Rebirth of SA",
+          image:
+            "https://images-cdn.kahoot.it/4a252804-0e3f-40fe-b872-b430fde6c98f?auto=webp&dpr=1&width=1200",
+        },
+
+        {
+          question:
+            "Which ICC cricket world cup was first hosted in the Southern hemisphere?",
+          options: ["1975", "1983", "1987", "1992"],
+          answer: "1992",
+          image:
+            "https://images-cdn.kahoot.it/44338cba-34df-4efd-a8ac-557f1e3bb30a?auto=webp&dpr=1&width=1200",
+        },
+        {
+          question:
+            "Who scored 1000+ runs and took 30+ wickets in the ICC cricket world cup?",
+          options: [
+            "Jacques Kallis",
+            "Tim Bresnan",
+            "Shakib Al Hasan",
+            "Ian Botham",
+          ],
+          answer: "Shakib Al Hasan",
+          image:
+            "https://images-cdn.kahoot.it/d223b75e-5733-4d49-afd1-d273ed15a052?auto=webp&dpr=1&width=1200",
+        },
+        {
+          question:
+            "Who has the highest batting average in the ICC cricket world cup? (Minimum 500+ runs)",
+          options: [
+            "Andrew Symonds",
+            "Chris Gayle",
+            "AB de Villiers",
+            "Brendon McCullum",
+          ],
+          answer: "Andrew Symonds",
+          image:
+            "https://images-cdn.kahoot.it/59b420ae-3725-457d-a6c8-8bde7d4be660?auto=webp&dpr=1&width=1200",
+        },
+        {
+          question:
+            "He is a legendary cricketer who was accused of chucking but later on became the highest wicket taker in history. He is..",
+          options: [
+            "Shakib Al Hasan",
+            "Shane Warne",
+            "Chaminda Vaas",
+            "Muttiah Muralitharan",
+          ],
+          answer: "Muttiah Muralitharan",
+          image:
+            "https://images-cdn.kahoot.it/a9dba5a8-74f2-4b7e-80bf-190544b57324?auto=webp&dpr=1&width=1200",
+        },
+        {
+          question:
+            "She is the only player in the world who played for both the football and cricket national team. Who is she?",
+          options: [
+            "Alyssa Healy",
+            "Ellyse Perry",
+            "Ashleigh Gardner",
+            "Clare Hunt",
+          ],
+          answer: "Ellyse Perry",
+          image:
+            "https://images-cdn.kahoot.it/14dcbedf-44c5-4fae-8959-8a0d2eccc3ee?auto=webp&dpr=1&width=1200",
+        },
+        {
+          question: "Identify him.",
+          options: [
+            "Gazi Sohel",
+            "Masudur Rahman Mukul",
+            "Sharfuddoula Ibne Shahid Saikat",
+            "Enamul Haque",
+          ],
+          answer: "Sharfuddoula Ibne Shahid Saikat",
+          image:
+            "https://images-cdn.kahoot.it/ff36da82-d700-4ff2-bb90-79f6edadc9ca?auto=webp&dpr=1&width=1200",
+        },
+        {
+          question:
+            "Nahid Rana has bowled the fastest delivery in the history of Bangladesh Cricket so far. What was the speed?",
+          options: ["151", "152", "156", "154"],
+          answer: "152",
+          image:
+            "https://images-cdn.kahoot.it/57ef61a2-7fa2-48a2-ab88-47f3d93e5a46?auto=webp&dpr=1&width=1200",
+        },
+        {
+          question:
+            "Who is the first highest consecutive wicket taker in the ICC ODI cricket world cup?",
+          options: [
+            "Glenn McGrath",
+            "Mitchell Starc",
+            "Chaminda Vaas",
+            "Shane Bond",
+          ],
+          answer: "Mitchell Starc",
+          image:
+            "https://images-cdn.kahoot.it/4a1eff54-9db7-4640-8cc0-e672113a303b?auto=webp&dpr=1&width=1200",
+        },
+        {
+          question:
+            "He is the first Bangladeshi to have his name in Lord's Cricket Ground Honours Board. Identify him.",
+          options: [
+            "Shahadat Hossain",
+            "Taposh Baishya",
+            "Junaid Siddique",
+            "Jahurul Islam",
+          ],
+          answer: "Shahadat Hossain",
+          image:
+            "https://images-cdn.kahoot.it/2834c930-5ffd-46c5-8b4a-725bda7b52e8?auto=webp&dpr=1&width=1200",
+        },
+        {
+          question:
+            "The first English team to visit in the Indian subcontinent (1880-1890) was named after him. Who is he?",
+          options: ["Ivo Bligh", "George Vernon", "Harry Kewell", "Lord Hawke"],
+          answer: "George Vernon",
+          image:
+            "https://images-cdn.kahoot.it/750bb47b-1942-43e3-a026-5006175b9a21?auto=webp&dpr=1&width=1200",
+        },
+
+        {
+          question:
+            "If you currently watch football you should know him. No more clues.",
+          options: [
+            "Kenan Yildiz",
+            "Milos Kerkez",
+            "Dean Huijsen",
+            "Alvaro Carreras",
+          ],
+          answer: "Dean Huijsen",
+          image:
+            "https://icdn.juvefc.com/wp-content/uploads/2024/01/Huijsen1-940x529.jpg?width=600",
+        },
+        {
+          question:
+            "Many Barca fans believe that Perdi Gonzalez is a La Masia product. Well actually he isn't. He was bought from another spanish club. Name the club",
+          options: [
+            "Valencia CF",
+            "UD Las Palmas",
+            "RCD Mallorca",
+            "Deportivo La Coruna",
+          ],
+          answer: "UD Las Palmas",
+          image:
+            "https://th.bing.com/th/id/OIP.LSiDnH8GDzTP25SaL3p6ZwHaE8?rs=1&pid=ImgDetMain",
+        },
+        {
+          question:
+            "এই ব্যক্তিকে বলা হয় 'বাংলার দেওয়াল' এবং 'কিং ব্যাক'। তিনি ভারতীয় লীগেও ফুটবল খেলেছিলেন। তবে জীবনের অধিকাংশ সময় আবাহনীতে খেলেছেন। উনি কে?",
+          options: [
+            "মোনেম মুন্না",
+            "আব্দুস সালাম মুর্শেদী",
+            "শেখ মোহাম্মদ আসলাম",
+            "জাহিদ হাসান এমিলি",
+          ],
+          answer: "মোনেম মুন্না",
+          image:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTit2swNmiGBO0BROSjhJOixo_zixJXksXPeg&s=600",
+        },
+        {
+          question:
+            "In the season 2015-16 Leicester City did the unthinkable and Won the Premier League. Who was their captain?",
+          options: [
+            "Kasper Schmeichel",
+            "Wes Morgan",
+            "Robert Huth",
+            "Jamie Vardy",
+          ],
+          answer: "Wes Morgan",
+          image: "https://i.ytimg.com/vi/TgrOvY6Zsok/sddefault.jpg?width=600",
+        },
+        {
+          question:
+            "We all know about Liverpool, Man United, Man City winning the UCL. But Nottingham Forest has also won the UCL. Actually they did it back to back thanks to this man. He was the manager of Nottingham back then. Name him.",
+          options: [
+            "Bela Guttmam",
+            "Brain Clough",
+            "Vicente Del Bosque",
+            "Ernst Happel",
+          ],
+          answer: "Brain Clough",
+          image:
+            "https://th.bing.com/th/id/OIP.sOG_4yt6bwHZmpfIAiaGHgHaGL?rs=1&pid=ImgDetMain",
+        },
+        {
+          question:
+            "Ted Lasso is a famous TV series about a Club named Richmond and its path to glory. Though Richmond is a frictional club, the shooting of Ted Lasso has happened in an actual Stadium. (Clue: It's an English Stadium)",
+          options: [
+            "Wembley",
+            "St. Mary's Park",
+            "Allianz Arena",
+            "Selhurst Park",
+          ],
+          answer: "Selhurst Park",
+          image:
+            "https://www.thetrainline.com/cms/media/8822/ted-lasso-nelson-field-richmondjpg.jpg?width=600",
+        },
+        {
+          question:
+            "This is the Etihad Stadium of Manchester City. But can you name me where they used to play before?",
+          options: [
+            "Etihad",
+            "Emirates",
+            "Manie Road",
+            "City of Manchester Stadium",
+          ],
+          answer: "Manie Road",
+          image:
+            "https://static.independent.co.uk/s3fs-public/thumbnails/image/2013/07/11/23/manchester-city-stadium.jpg?width=600",
+        },
+
+        {
+          question:
+            "The 2011 Champions League was won by Barcelona. Who lifted the UCL trophy?",
+          options: ["Carles Puyol", "Marc Muniesa", "Eric Abidal", "Maxwell"],
+          answer: "Eric Abidal",
+          image:
+            "https://heavy.com/wp-content/uploads/2015/06/barca-2011.jpg?resize=1024",
+        },
+        {
+          question:
+            "This is one of the most famous pictures in football history showing Roberto Baggio after missing a penalty in the 1994 World Cup final. What is this picture called?",
+          options: [
+            "The Downed Ponytail",
+            "The Fall of The Hero",
+            "Ballon d'Or to Country's Enemy",
+            "The Man Who Died Standing",
+          ],
+          answer: "The Man Who Died Standing",
+          image:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_eMf7iVbh5VRPy4yc77lHdF-byPRiAE3glg&s",
+        },
+        {
+          question:
+            "The (in)famous 'Hand of God' goal was scored by Diego Maradona in the 1986 FIFA World Cup quarterfinals against England. Later in the same match, he scored the 'Goal of the Century.' Who was the goalkeeper who conceded both goals? (Fun fact: This goalkeeper, alongside Fabien Barthez, holds the record for the most clean sheets in World Cup history.)",
+          options: [
+            "David James",
+            "Peter Shilton",
+            "Gordon Banks",
+            "Ted Ditchburn",
+          ],
+          answer: "Peter Shilton",
+          image:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4HhrLmZxRelzQZQ09Qv4YgpUvwSEULPQmhQ&s",
+        },
+        {
+          question:
+            "Who said: 'Football is a simple game. Twenty-two men chase a ball for 90 minutes and at the end, the Germans always win'?",
+          options: [
+            "Gary Lineker",
+            "Karl-Heinz Rummenigge",
+            "Franz Beckenbauer",
+            "Marco Van Basten",
+          ],
+          answer: "Gary Lineker",
+        },
+        {
+          question: "What is the link between these 3 players ?",
+          options: [
+            "They All played for Milan",
+            "One Club player",
+            "Jersey number retired by respective clubs",
+            "Became Player-manager",
+          ],
+          answer: "Jersey number retired by respective clubs",
+          image: "collage.jpeg",
+        },
+        {
+          question:
+            "Aberdeen is a Scottish club. It is the last club to beat Real Madrid in a European final, which was the 1983 European Cup Winners' Cup Final. Who was the manager of Aberdeen at that time?",
+          options: [
+            "Brian Clough",
+            "Alex Ferguson",
+            "Johan Cruyff",
+            "Denis Law",
+          ],
+          answer: "Alex Ferguson",
+          image: "Alex.jpeg",
+        },
+        {
+          question:
+            "Who scored the first goal for Saudi Arabia in their 2-1 win over Argentina at the 2022 World Cup?",
+          options: [
+            "Salman Al-Faraj",
+            "Feras Al-Buraikan",
+            "Abdulelah Al-Malki",
+            "Saleh Al-Shehri",
+          ],
+          answer: "Saleh Al-Shehri",
+          image: "saleh.jpeg",
+        },
+        {
+          question:
+            "According to FIFA rules, Equal Number of shooters should be in the field for the penalty shootout to start. In the 2006 WC final Zidane got a Red card and France were down to ten men. When the time of penalty shootout arrived, France's 10 shooters were in the field. But Italy had 11 shooters. So they had to take one player out who had to be with the substitutes and couldn't be involved in the shoot out. Who was this player?",
+          options: [
+            "Gennaro Gattuso",
+            "Marco Materazzi",
+            "Gianluca Zambrotta",
+            "Fabio Grosso",
+          ],
+          answer: "Gennaro Gattuso",
+          image: "france.jpeg",
+        },
+        {
+          question:
+            " In the 2009 Champions League, let's say, things weren’t so fair to Chelsea. Who was the referee in the Chelsea vs Barcelona match? ",
+          options: [
+            "Jürgen Jansen",
+            "Edílson Pereira de Carvalho",
+            "Manuel González",
+            "Tom Henning Ovrebo",
+          ],
+          answer: "Tom Henning Ovrebo",
+          image: "tom.jpeg",
+        },
+        {
+          question:
+            " One of the most controversial things. In 2023, Spain won the FIFA Women's WC. During the medal giving ceremony, the then coach of the Spanish National Women's Team kissed a player without her consent. Later following this drama the coach was sacked. Who was the player that he kissed?",
+          options: [
+            "Alexia Putellas",
+            "Jennie Hermoso",
+            "Mapi Leon",
+            "Olga Carmona",
+          ],
+          answer: "Jennie Hermoso",
+          image: "kiss.jpeg",
+        },
+        {
+          question:
+            "On April 15, 1989, the Hillsborough disaster occurred during an FA Cup semi-final between Liverpool and Nottingham Forest at Hillsborough stadium. It resulted in the tragic deaths of 97 Liverpool fans. This day is remembered as the worst disaster in British sporting history. Which club’s home ground is the Hillsborough Stadium? ",
+          options: [
+            "Nottingham Forest",
+            "Liverpool",
+            "Sheffield Wednesday",
+            "Bristol Rovers",
+          ],
+          answer: "Sheffield Wednesday",
+          image: "disaster.jpeg",
+        },
+        {
+          question:
+            "If you're giving a sports quiz that means anything related to sports is for you. Blue Lock is a sports anime (football). In the match between Japan U21 and Blue Lock XI who scored the opener?",
+          options: [
+            "Itoshi Sae",
+            "Itoshi Rin",
+            "Nagi Seishiro",
+            "Shido Ryusei",
+          ],
+          answer: "Itoshi Sae",
+          image: "bluelock.jpeg",
+        },
+        {
+          question: "Barca fans identify him - he was a defender ?",
+          options: [
+            "Marcel Desailly",
+            "Kolo Toure",
+            "Lilian Thuram",
+            "Eric Abidal",
+          ],
+          answer: "Lilian Thuram",
+          image: "nigga.jpeg",
+        },
+
+        {
+          question:
+            "One of the greatest NBA players in history. He has many records such as MOST MVP AWARDS, MOST MINUTES PLAYED, MOST SEASONS PLAYED, MOST CAREER WINS and the list goes on. Name the player.",
+          options: [
+            "Witt Chamberlain",
+            "Hakeem Olajuwon",
+            "Michael Jordan",
+            "Kareem Abdul Jabbar",
+          ],
+          answer: "Kareem Abdul Jabbar",
+          image: "kareem.jpeg",
+        },
+        {
+          question:
+            "Arguably the best Asian Baseball player. He was born in Japan. He played the majority of his career at Mariners. He holds the record for Most hits in a single season, Most 200-hits in a season and so on. Who is he?",
+          options: [
+            "Hideo Nomo",
+            "Ichiro Suzuki",
+            "Shohei Ohtani",
+            "Sadaharu Oh",
+          ],
+          answer: "Ichiro Suzuki",
+          image: "asia baseball.jpeg",
+        },
+        {
+          question:
+            "This is the traditional dance performed by both the Men's and Women's Rugby team of New Zealand. Name the dance.",
+          options: ["Tasma", "Haka", "Maori", "Siva"],
+          answer: "Haka",
+          image: "haka.jpeg",
+        },
+        {
+          question:
+            "At just 13 years and 330 days, this Japanese girl holds the record of becoming the youngest skateboarder to win an Olympics gold. She achieved this feat in the 2020 Tokyo Olympics. Can you guess her name?",
+          options: [
+            "Momiji Nishiya",
+            "Arisa Trew",
+            "Coco Yoshizawa",
+            "Funa Nakayama",
+          ],
+          answer: "Momiji Nishiya",
+          image: "tokyo.jpeg",
+        },
+        {
+          question:
+            "We all know the picture very well. In the 2024 London Olympics this person became famous for shooting without any gears and eventually won a Bronze for Turkiye. Name him.",
+          options: [
+            "Yusuf Dikeç",
+            "Fazil Say",
+            "Aziz Sancar",
+            "Naim Suleymanoglu",
+          ],
+          answer: "Yusuf Dikeç",
+          image: "yusuf.jpeg",
+        },
+        {
+          question:
+            "One of the greatest chess players to ever play this game. He was a Russian player. During his timeline he was the rival of another great Russian player. Name him.",
+          options: [
+            "Gary Kasparov",
+            "Antoly Karpov",
+            "Bobby Fischer",
+            "Ian Nepomniachtchi",
+          ],
+          answer: "Gary Kasparov",
+          image: "gary.jpeg",
+        },
+        {
+          question:
+            "You may have seen him if you've ever seen any chess content. He is an IM from America and his elo is 2324 (May 17, 2025). He teaches and entertains people with his contents on chess. Who is this person?",
+          options: [
+            "Eric Rosen",
+            "Hikaru Nakamura",
+            "Levy Rozman",
+            "Anthony Walker Jr.",
+          ],
+          answer: "Levy Rozman",
+          image: "levy.jpeg",
+        },
+        {
+          question: "Straight question. Whose silhouette is in the NBA logo?",
+          options: [
+            "Jerry West",
+            "Witt Chamberlain",
+            "John Stockton",
+            "Larry Bird",
+          ],
+          answer: "Jerry West",
+          image: "nba.jpeg",
+        },
+        {
+          question:
+            "He is one of the reasons behind Karasuno's success in recent times. He is the main middle blocker of Karasuno. Because of his blocks Karasuno has crossed the bridge many times. Name this character from Haikyuu.",
+          options: [
+            "Hinata Shoyo",
+            "Kei Tsukishima",
+            "Yu Nishinoya",
+            "Tobio Kageyama",
+          ],
+          answer: "Kei Tsukishima",
+          image: "kei.jpeg",
+        },
+
+        {
+          question:
+            "Which Bangladeshi opener hit the most sixes in a T20I innings? (9 sixes)",
+          options: [
+            "Tamim Iqbal",
+            "Nafees Iqbal",
+            "Naim Sheikh",
+            "Parvez Hossain Emon",
+          ],
+          answer: "Parvez Hossain Emon",
+          image: "emon.jpeg",
+        },
+      ];
+      const quizForm = document.getElementById("quizForm");
+      const timerElement = document.getElementById("timer");
+      const notification = document.getElementById("notification");
+      const scoreBox = document.getElementById("scoreBox");
+      const progressBar = document.getElementById("progressBar");
+      const fullscreenWarning = document.getElementById("fullscreenWarning");
+      const warningTimer = document.getElementById("warningTimer");
+      const returnToQuizBtn = document.getElementById("returnToQuizBtn");
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbzd3mFXAGX_F6ocjWJIwDYIrAwEzpWY9-YN1aiVBR4ZG2kNCavZbf4929dPUK-SpGEDng/exec";
+
+      let timeLeft = 900; // 15 minutes
+      let quizSubmitted = false;
+      let answeredQuestions = 0;
+      let warningTimeLeft = 10;
+      let warningInterval;
+      let visibilityChangeTimeout;
+      let isFullscreenWarningActive = false;
+      let timerInterval;
+
+      // Initialize quiz
+      function initializeQuiz() {
+        questions.forEach((q, index) => {
+          const questionDiv = document.createElement("div");
+          questionDiv.className = "question";
+
+          const questionNumber = document.createElement("div");
+          questionNumber.className = "question-number";
+          questionNumber.textContent = index + 1;
+
+          const questionText = document.createElement("div");
+          questionText.className = "question-text";
+          questionText.textContent = q.question;
+
+          if (q.image) {
+            const questionImage = document.createElement("img");
+            questionImage.className = "question-image";
+            questionImage.src = q.image;
+            questionImage.alt = "Question image";
+            questionImage.style.maxHeight = "300px";
+            questionText.appendChild(document.createElement("br"));
+            questionText.appendChild(questionImage);
+          }
+
+          const optionsDiv = document.createElement("div");
+          optionsDiv.className = "options";
+
+          q.options.forEach((option) => {
+            const label = document.createElement("label");
+
+            const input = document.createElement("input");
+            input.type = "radio";
+            input.name = `q${index}`;
+            input.value = option;
+            input.onclick = function () {
+              lockAnswer(this);
+              updateProgress();
+            };
+
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(option));
+            optionsDiv.appendChild(label);
+          });
+
+          questionDiv.appendChild(questionNumber);
+          questionDiv.appendChild(questionText);
+          questionDiv.appendChild(optionsDiv);
+          quizForm.appendChild(questionDiv);
+        });
+
+        updateProgress();
+        setupStrictAntiCheating();
+        timerInterval = setInterval(updateTimer, 1000);
+      }
+
+      // Strict anti-cheating with 10-second warning
+      function setupStrictAntiCheating() {
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        window.addEventListener("blur", handleWindowBlur);
+        window.addEventListener("focus", handleWindowFocus);
+        document.addEventListener("fullscreenchange", handleFullscreenChange);
+        document.addEventListener(
+          "webkitfullscreenchange",
+          handleFullscreenChange
+        );
+        document.addEventListener(
+          "mozfullscreenchange",
+          handleFullscreenChange
+        );
+        document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+        document.addEventListener("mouseleave", handleMouseLeave);
+        document.addEventListener("contextmenu", preventContextMenu);
+        document.addEventListener("keydown", preventShortcuts);
+      }
+
+      function handleVisibilityChange() {
+        if (document.hidden && !quizSubmitted) {
+          showFullscreenWarning();
+        } else if (!document.hidden && isFullscreenWarningActive) {
+          clearWarningTimer();
+          hideFullscreenWarning();
+        }
+      }
+
+      function handleWindowBlur() {
+        if (!quizSubmitted) {
+          visibilityChangeTimeout = setTimeout(() => {
+            if (!document.hasFocus() && !quizSubmitted) {
+              showFullscreenWarning();
+            }
+          }, 500);
+        }
+      }
+
+      function handleWindowFocus() {
+        clearTimeout(visibilityChangeTimeout);
+        if (isFullscreenWarningActive) {
+          clearWarningTimer();
+          hideFullscreenWarning();
+        }
+      }
+
+      function handleMouseLeave(e) {
+        if (e.clientY < 0 && !quizSubmitted && !isFullscreenWarningActive) {
+          showFullscreenWarning();
+        }
+      }
+
+      function handleFullscreenChange() {
+        if (
+          !document.fullscreenElement &&
+          !document.webkitFullscreenElement &&
+          !document.mozFullScreenElement &&
+          !document.msFullscreenElement &&
+          !quizSubmitted
+        ) {
+          showFullscreenWarning();
+        }
+      }
+
+      function preventContextMenu(e) {
+        e.preventDefault();
+        if (!quizSubmitted) {
+          showNotification("Right-click is disabled during this quiz", "error");
+          showFullscreenWarning();
+        }
+      }
+
+      function preventShortcuts(e) {
+        const blockedKeys = {
+          Alt: true,
+          Tab: true,
+          F4: true,
+          Meta: true,
+          Control: true,
+        };
+
+        if (
+          blockedKeys[e.key] ||
+          (e.ctrlKey && ["Tab", "W", "N", "T"].includes(e.key))
+        ) {
+          e.preventDefault();
+          if (!quizSubmitted) {
+            showNotification("Switching apps is not allowed", "error");
+            showFullscreenWarning();
+          }
+        }
+      }
+
+      function showFullscreenWarning() {
+        if (quizSubmitted || isFullscreenWarningActive) return;
+
+        isFullscreenWarningActive = true;
+        fullscreenWarning.style.display = "flex";
+        warningTimeLeft = 10;
+        warningTimer.textContent = warningTimeLeft;
+
+        warningInterval = setInterval(() => {
+          warningTimeLeft--;
+          warningTimer.textContent = warningTimeLeft;
+
+          if (warningTimeLeft <= 0) {
+            clearWarningTimer();
+            submitQuiz(null, "Quiz submitted because you left the quiz window");
+          }
+        }, 1000);
+      }
+
+      function hideFullscreenWarning() {
+        isFullscreenWarningActive = false;
+        fullscreenWarning.style.display = "none";
+      }
+
+      function clearWarningTimer() {
+        if (warningInterval) {
+          clearInterval(warningInterval);
+          warningInterval = null;
+        }
+      }
+
+      returnToQuizBtn.addEventListener("click", () => {
+        clearWarningTimer();
+        hideFullscreenWarning();
+      });
+
+      function updateProgress() {
+        answeredQuestions = 0;
+        questions.forEach((q, index) => {
+          if (document.querySelector(`input[name="q${index}"]:checked`)) {
+            answeredQuestions++;
+          }
+        });
+        progressBar.style.width = `${
+          (answeredQuestions / questions.length) * 100
+        }%`;
+      }
+
+      function lockAnswer(input) {
+        document
+          .querySelectorAll(`input[name="${input.name}"]`)
+          .forEach((opt) => {
+            opt.disabled = true;
+          });
+        input.disabled = false;
+      }
+
+      function showNotification(message, type) {
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `<i class="fas ${
+          type === "success" ? "fa-check-circle" : "fa-exclamation-circle"
+        }"></i> ${message}`;
+        notification.style.display = "block";
+        setTimeout(() => (notification.style.display = "none"), 5000);
+      }
+
+      function submitQuiz(event, message) {
+        if (event) event.preventDefault();
+        if (quizSubmitted) return;
+
+        // Validate name input
+        const studentNameInput = document.getElementById("studentNameInput");
+        if (!studentNameInput.value && !message) {
+          showNotification("Please enter your name before submitting", "error");
+          return;
+        }
+
+        // Calculate score
+        let score = 0;
+        questions.forEach((q, index) => {
+          const selected = document.querySelector(
+            `input[name="q${index}"]:checked`
+          );
+          const options = document.querySelectorAll(`input[name="q${index}"]`);
+
+          options.forEach((input) => {
+            const label = input.parentElement;
+            if (input.value === q.answer) {
+              if (input.checked) {
+                score++;
+                label.classList.add("correct-icon");
+              } else if (!selected || selected.value !== q.answer) {
+                const hint = document.createElement("div");
+                hint.className = "correct-answer-hint";
+                hint.innerHTML = `<i class="fas fa-lightbulb"></i> Correct answer: ${q.answer}`;
+                label.appendChild(hint);
+              }
+            } else if (input.checked) {
+              label.classList.add("wrong-icon");
+            }
+          });
+        });
+
+        quizSubmitted = true;
+        clearInterval(timerInterval);
+        clearWarningTimer();
+        document.querySelector(".submit-btn").disabled = true;
+        document.querySelector(".submit-btn").innerHTML =
+          '<i class="fas fa-check"></i> Quiz Submitted';
+
+        // Remove all anti-cheating event listeners
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange
+        );
+        window.removeEventListener("blur", handleWindowBlur);
+        window.removeEventListener("focus", handleWindowFocus);
+        document.removeEventListener(
+          "fullscreenchange",
+          handleFullscreenChange
+        );
+        document.removeEventListener(
+          "webkitfullscreenchange",
+          handleFullscreenChange
+        );
+        document.removeEventListener(
+          "mozfullscreenchange",
+          handleFullscreenChange
+        );
+        document.removeEventListener(
+          "MSFullscreenChange",
+          handleFullscreenChange
+        );
+        document.removeEventListener("mouseleave", handleMouseLeave);
+        document.removeEventListener("contextmenu", preventContextMenu);
+        document.removeEventListener("keydown", preventShortcuts);
+
+        // Show results
+        scoreBox.style.display = "block";
+        const percentage = Math.round((score / questions.length) * 100);
+        scoreBox.textContent = `Your Score: ${score} / ${questions.length}`;
+
+        let feedback = "";
+        if (percentage >= 80) feedback = "Excellent work!";
+        else if (percentage >= 60) feedback = "Good job!";
+        else if (percentage >= 40) feedback = "Keep practicing!";
+        else feedback = "Review the material and try again!";
+
+        const messageDiv = document.createElement("div");
+        messageDiv.style.marginTop = "10px";
+        messageDiv.style.fontSize = "14px";
+        messageDiv.style.color =
+          percentage >= 60 ? "var(--success)" : "var(--danger)";
+        messageDiv.style.fontWeight = "500";
+        messageDiv.textContent = feedback;
+        scoreBox.appendChild(messageDiv);
+
+        // Prepare data for Google Sheets submission
+        const formData = new FormData();
+        formData.append("Name", studentNameInput.value || "Anonymous");
+        formData.append("Score", score);
+        formData.append("Total", questions.length);
+        formData.append("Percentage", percentage + "%");
+
+        // Submit to Google Apps Script
+        fetch(scriptURL, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Success:", data);
+            showNotification("Score submitted successfully!", "success");
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            showNotification("Error submitting score", "error");
+          });
+
+        if (message) {
+          showNotification(message, "error");
+        }
+      }
+
+      function updateTimer() {
+        if (timeLeft <= 0) {
+          timerElement.textContent = "Time's up!";
+          timerElement.classList.add("blink");
+          submitQuiz(null, "Time's up! Quiz submitted automatically.");
+        } else {
+          const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+          const seconds = String(timeLeft % 60).padStart(2, "0");
+          timerElement.textContent = `${minutes}:${seconds}`;
+
+          if (timeLeft <= 30) {
+            timerElement.style.backgroundColor = "var(--danger)";
+            timerElement.style.color = "white";
+          } else if (timeLeft <= 60) {
+            timerElement.style.backgroundColor = "var(--warning)";
+          }
+          timeLeft--;
+        }
+      }
+
+      // Start the quiz
+      initializeQuiz();
+    </script>
+  </body>
+</html>
